@@ -4,6 +4,7 @@ import openai
 import boto3
 from botocore.exceptions import NoCredentialsError
 
+
 class SearchEngine:
     def __init__(self, search_engine_api):
         self.search_engine_api = search_engine_api
@@ -13,10 +14,12 @@ class SearchEngine:
         links = self.extract_links(response)
         return links
 
-    def extract_links(self, response):  
+    def extract_links(self, response):
         soup = BeautifulSoup(response.content, 'html.parser')
-        links = [link['href'] for link in soup.find_all('a', href=True) if link['href'].startswith('http')]
+        links = [link['href'] for link in soup.find_all(
+            'a', href=True) if link['href'].startswith('http')]
         return links
+
 
 class ContentExtractor:
     def __init__(self, search_engine):
@@ -31,12 +34,13 @@ class ContentExtractor:
                 content.append(page_content)
         return content
 
-    def extract_page_content(self, link):  
+    def extract_page_content(self, link):
         response = requests.get(link)
         if response.ok:
             soup = BeautifulSoup(response.content, 'html.parser')
             content = soup.get_text()
             return content
+
 
 class TextSummarizer:
     def __init__(self, model_type):
@@ -52,6 +56,7 @@ class TextSummarizer:
         summary = response.choices[0].text.strip()
         return summary
 
+
 class NLPAnalyzer:
     def __init__(self, model_type):
         self.model_type = model_type
@@ -64,6 +69,7 @@ class NLPAnalyzer:
         # Implementation of keyword extraction techniques
         pass
 
+
 class CloudStorage:
     def __init__(self, storage_type):
         self.storage_type = storage_type
@@ -72,13 +78,15 @@ class CloudStorage:
         if self.storage_type == "AWS":
             s3 = boto3.client('s3')
             try:
-                s3.put_object(Body=content.encode(), Bucket='my_bucket', Key='content.txt')
+                s3.put_object(Body=content.encode(),
+                              Bucket='my_bucket', Key='content.txt')
                 return True
             except NoCredentialsError:
                 return False
         elif self.storage_type == "Google Cloud":
             # Implementation of storing content in Google Cloud Storage
             pass
+
 
 class UserInterface:
     @staticmethod
@@ -106,6 +114,7 @@ class UserInterface:
         # Get user feedback and update the system's learning algorithm
         pass
 
+
 class ContentFilter:
     def __init__(self, blacklist):
         self.blacklist = blacklist
@@ -113,6 +122,7 @@ class ContentFilter:
     def filter_content(self, content):
         # Implementation of content moderation techniques
         pass
+
 
 class ContentAggregator:
     def __init__(self, search_engine, content_extractor, summarizer, nlp_analyzer, cloud_storage, content_filter):
@@ -138,14 +148,17 @@ class ContentAggregator:
                 user_feedback = UserInterface.get_user_feedback()
 
             else:
-                UserInterface.display_error_message("No relevant content found.")
+                UserInterface.display_error_message(
+                    "No relevant content found.")
         except Exception as e:
             UserInterface.display_error_message(str(e))
+
 
 class Personalization:
     def update_learning_algorithm(self, user_feedback):
         # Update learning algorithm based on user feedback
         pass
+
 
 class ContentQualityControl:
     def __init__(self, content_filter):
@@ -154,6 +167,7 @@ class ContentQualityControl:
     def quality_check(self, summary):
         # Perform quality checks on the summary
         pass
+
 
 class AutonomousSystem:
     def __init__(self, content_aggregator, personalization, content_quality_control):
@@ -164,8 +178,10 @@ class AutonomousSystem:
     def run_autonomous_system(self):
         while True:
             self.content_aggregator.aggregate_and_summarize_content()
-            self.personalization.update_learning_algorithm(UserInterface.get_user_feedback())
+            self.personalization.update_learning_algorithm(
+                UserInterface.get_user_feedback())
             self.content_quality_control.quality_check(summary)
+
 
 # Example Usage
 search_engine_api = "https://www.googleapis.com/search"
@@ -179,11 +195,13 @@ cloud_storage = CloudStorage(storage_type)
 blacklist = ['example.com']
 content_filter = ContentFilter(blacklist)
 
-content_aggregator = ContentAggregator(search_engine, content_extractor, summarizer, nlp_analyzer, cloud_storage, content_filter)
+content_aggregator = ContentAggregator(
+    search_engine, content_extractor, summarizer, nlp_analyzer, cloud_storage, content_filter)
 
 personalization = Personalization()
 
 content_quality_control = ContentQualityControl(content_filter)
 
-autonomy_system = AutonomousSystem(content_aggregator, personalization, content_quality_control)
+autonomy_system = AutonomousSystem(
+    content_aggregator, personalization, content_quality_control)
 autonomy_system.run_autonomous_system()
