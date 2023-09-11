@@ -10,14 +10,15 @@ class SearchEngine:
         self.search_engine_api = search_engine_api
 
     def search(self, query):
-        response = requests.get(self.search_engine_api, params={'q': query})
+        response = requests.get(
+            self.search_engine_api, params={"q": query})
         links = self.extract_links(response)
         return links
 
     def extract_links(self, response):
-        soup = BeautifulSoup(response.content, 'html.parser')
-        links = [link['href'] for link in soup.find_all(
-            'a', href=True) if link['href'].startswith('http')]
+        soup = BeautifulSoup(response.content, "html.parser")
+        links = [link["href"]
+                 for link in soup.find_all("a", href=True) if link["href"].startswith("http")]
         return links
 
 
@@ -37,7 +38,7 @@ class ContentExtractor:
     def extract_page_content(self, link):
         response = requests.get(link)
         if response.ok:
-            soup = BeautifulSoup(response.content, 'html.parser')
+            soup = BeautifulSoup(response.content, "html.parser")
             content = soup.get_text()
             return content
 
@@ -51,7 +52,7 @@ class TextSummarizer:
             engine=self.model_type,
             prompt=content,
             temperature=0.3,
-            max_tokens=100
+            max_tokens=100,
         )
         summary = response.choices[0].text.strip()
         return summary
@@ -76,10 +77,11 @@ class CloudStorage:
 
     def store_content(self, content):
         if self.storage_type == "AWS":
-            s3 = boto3.client('s3')
+            s3 = boto3.client("s3")
             try:
-                s3.put_object(Body=content.encode(),
-                              Bucket='my_bucket', Key='content.txt')
+                s3.put_object(
+                    Body=content.encode(), Bucket="my_bucket", Key="content.txt"
+                )
                 return True
             except NoCredentialsError:
                 return False
@@ -179,7 +181,8 @@ class AutonomousSystem:
         while True:
             self.content_aggregator.aggregate_and_summarize_content()
             self.personalization.update_learning_algorithm(
-                UserInterface.get_user_feedback())
+                UserInterface.get_user_feedback()
+            )
             self.content_quality_control.quality_check(summary)
 
 
@@ -192,16 +195,18 @@ summarizer = TextSummarizer(model_type)
 nlp_analyzer = NLPAnalyzer(model_type)
 storage_type = "AWS"
 cloud_storage = CloudStorage(storage_type)
-blacklist = ['example.com']
+blacklist = ["example.com"]
 content_filter = ContentFilter(blacklist)
 
 content_aggregator = ContentAggregator(
-    search_engine, content_extractor, summarizer, nlp_analyzer, cloud_storage, content_filter)
+    search_engine, content_extractor, summarizer, nlp_analyzer, cloud_storage, content_filter
+)
 
 personalization = Personalization()
 
 content_quality_control = ContentQualityControl(content_filter)
 
 autonomy_system = AutonomousSystem(
-    content_aggregator, personalization, content_quality_control)
+    content_aggregator, personalization, content_quality_control
+)
 autonomy_system.run_autonomous_system()
